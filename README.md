@@ -1,3 +1,3 @@
 # AimGud
 
-todo
+Aimgud is under development...
