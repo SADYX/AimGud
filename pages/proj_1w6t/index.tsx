@@ -1,4 +1,4 @@
-import threeInit, { ThreeParams } from '@/utils/threeInit';
+import threeInit, { ThreeParams } from './threeInit';
 import { useEffect, useRef, useState } from 'react';
 
 
