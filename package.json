@@ -22,5 +22,6 @@
   },
   "devDependencies": {
     "@types/three": "^0.146.0"
-  }
+  },
+  "homepage": "https://sadyx.github.io/aimgud/"
 }
