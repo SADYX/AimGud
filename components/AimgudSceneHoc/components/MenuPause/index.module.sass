@@ -1,0 +1,31 @@
+.container
+    width: 100%
+    height: 100%
+    z-index: 9
+    position: absolute
+    top: 0
+    left: 0
+    background-color: rgba(0, 0, 0, 0.4)
+
+    >div
+        .menuContainer
+            position: absolute
+            left: 50%
+            top: 50%
+            transform: translate(-50%, -50%)
+            background-color: rgba(36, 199, 106, 0.8)
+            border-radius: 15px
+            padding: 20px
+
+            .menuItem
+                color: #fff
+                background-color: rgba(0, 0, 0, 0.3)
+                padding: 8px
+                cursor: pointer
+                border-radius: 15px
+                display: flex
+                align-items: center
+                justify-content: center
+
+                &:not(:last-child)
+                    margin-bottom: 10px
