@@ -62,4 +62,4 @@ const threeInit = (dom: HTMLDivElement) => {
 
 export type { ThreeParams };
 
-export default threeInit;
+export { threeInit };
