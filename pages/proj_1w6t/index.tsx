@@ -10,17 +10,16 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 	const update = useCallback(() => {
 		if (!threeParams) return;
 		const {
-			orbitControl,
 			renderer,
 			scene,
 			camera,
 		} = threeParams;
-		orbitControl.update();
 		renderer.render(scene, camera);
 	}, [threeParams]);
 
 	useImperativeHandle(ref, () => ({
 		updateFn: update,
+		restart: () => { },
 	}));
 
 	useEffect(() => {
@@ -43,9 +42,9 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 				clientWidth: width,
 				clientHeight: height,
 			} = dom;
-			camera.aspect = width / height;
 			camera.updateProjectionMatrix();
 			renderer.setSize(width, height);
+			renderer.render(scene, camera);
 		}
 
 		window.addEventListener('resize', onResize);

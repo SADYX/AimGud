@@ -13,6 +13,24 @@ export const generatePerspectiveCamera = (dom: HTMLDivElement) => {
     return camera;
 }
 
+export const generateOrthographicCamera = (dom: HTMLDivElement) => {
+    const {
+        clientWidth: width,
+        clientHeight: height,
+    } = dom;
+    const camera = new THREE.OrthographicCamera(
+        width / - 2,
+        width / 2,
+        height / 2,
+        height / - 2,
+        1,
+        100,
+    );
+    camera.position.set(100, 100, 100);
+    camera.up.set(0, 1, 0);
+    return camera;
+}
+
 export const generateOrbitControls = (
     camera: THREE.Camera,
     renderer: THREE.Renderer,
@@ -28,6 +46,7 @@ export const generateOrbitControls = (
     orbitControl.target.set(0, 0, 0);
     return orbitControl;
 }
+
 
 export const generateLights = () => {
     const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
