@@ -1,10 +1,27 @@
 import threeInit, { ThreeParams } from './threeInit';
-import { useEffect, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { aimgudSceneGetter, ThreeDomHandle, ThreeDomProps } from 'components/AimgudSceneHoc';
 
-
-const Prog_1w6t = () => {
+const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 	const threeRef = useRef<HTMLDivElement>(null);
 	const [threeParams, setThreeParams] = useState<ThreeParams>();
+
+	// three scene render function
+	const update = useCallback(() => {
+		if (!threeParams) return;
+		const {
+			orbitControl,
+			renderer,
+			scene,
+			camera,
+		} = threeParams;
+		orbitControl.update();
+		renderer.render(scene, camera);
+	}, [threeParams]);
+
+	useImperativeHandle(ref, () => ({
+		updateFn: update,
+	}));
 
 	useEffect(() => {
 		const dom = threeRef.current;
@@ -16,15 +33,10 @@ const Prog_1w6t = () => {
 			camera,
 			renderer,
 			scene,
-			orbitControl,
 		} = params;
-		let idAnimateFrame = 0;
 
-		const animate = () => {
-			idAnimateFrame = requestAnimationFrame(animate);
-			orbitControl.update();
-			renderer.render(scene, camera);
-		}
+		// render the first frame
+		renderer.render(scene, camera);
 
 		const onResize = () => {
 			const {
@@ -36,20 +48,18 @@ const Prog_1w6t = () => {
 			renderer.setSize(width, height);
 		}
 
-		// invoke/bind events
-		animate();
 		window.addEventListener('resize', onResize);
 
 		return () => {
-			// stop/unbind events
 			window.removeEventListener('resize', onResize);
-			cancelAnimationFrame(idAnimateFrame);
 		}
 	}, []);
 
-	return <>
-		<div className='three' ref={threeRef} />
-	</>
-}
+	return <div className='three' ref={threeRef} />;
+});
 
-export default Prog_1w6t;
+ThreeDom.displayName = 'ThreeDom';
+
+const Proj_1w6t = aimgudSceneGetter(ThreeDom);
+
+export default Proj_1w6t;

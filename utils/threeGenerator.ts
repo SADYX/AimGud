@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from '@/lib/controls/OrbitControls';
 
-
-
 export const generatePerspectiveCamera = (dom: HTMLDivElement) => {
     const camera = new THREE.PerspectiveCamera(
         75,
@@ -52,7 +50,6 @@ export const generateRenderer = (dom: HTMLDivElement) => {
     dom.appendChild(renderer.domElement);
     return renderer;
 }
-
 
 export const generateAxesHelper = (length: number = 100) => {
     const axis = new THREE.AxesHelper(length);
