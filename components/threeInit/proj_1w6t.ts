@@ -1,5 +1,4 @@
 import {
-    generateAxesHelper,
     generateLights,
     generateRenderer,
     generateScene,
@@ -38,7 +37,6 @@ const threeInit = (dom: HTMLDivElement) => {
     const renderer = generateRenderer(dom);
     const scene = generateScene();
     const lights = generateLights();
-    // const axes = generateAxesHelper(2000);
     const wall = generateWall();
     const grid = generateGrid();
 
@@ -48,7 +46,6 @@ const threeInit = (dom: HTMLDivElement) => {
     // add stuff
     scene.add(
         lights,
-        // axes,
         wall,
         grid,
     );

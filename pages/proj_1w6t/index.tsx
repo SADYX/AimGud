@@ -1,4 +1,4 @@
-import { threeInit, ThreeParams } from './threeInit';
+import { threeInit, ThreeParams } from 'components/threeInit/proj_1w6t';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { aimgudSceneGetter, ThreeDomHandle, ThreeDomProps } from 'components/AimgudSceneHoc';
 
