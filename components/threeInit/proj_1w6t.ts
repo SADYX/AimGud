@@ -13,6 +13,7 @@ type ThreeParams = {
 }
 
 const SIDE_LENGTH = 800;
+const R = 15;
 
 const generateWall = () => {
     const geo = new THREE.PlaneGeometry(SIDE_LENGTH, SIDE_LENGTH);
@@ -32,6 +33,18 @@ const generateGrid = () => {
     return helper;
 }
 
+const generatePoint = () => {
+    const geo = new THREE.CircleGeometry(R, 32);
+    const mat = new THREE.MeshBasicMaterial({
+        color: 0xfcb603,
+        side: THREE.DoubleSide,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.rotateX(Math.PI / 2);
+    mesh.name = 'point';
+    return mesh;
+}
+
 const threeInit = (dom: HTMLDivElement) => {
     const camera = generateOrthographicCamera(dom);
     const renderer = generateRenderer(dom);
@@ -40,7 +53,7 @@ const threeInit = (dom: HTMLDivElement) => {
     const wall = generateWall();
     const grid = generateGrid();
 
-    camera.position.set(0, 10, 0);
+    camera.position.set(0, 50, 0);
     camera.lookAt(0, 0, 0);
 
     // add stuff
@@ -59,4 +72,4 @@ const threeInit = (dom: HTMLDivElement) => {
 
 export type { ThreeParams };
 
-export { threeInit };
+export { threeInit, SIDE_LENGTH, R, generatePoint };

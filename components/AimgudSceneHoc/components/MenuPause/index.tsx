@@ -1,8 +1,9 @@
 import styles from './index.module.sass';
 import { useRouter } from 'next/router';
+import { MouseEventHandler } from 'react';
 
 type MenuPauseProps = {
-    startOrContinue: () => void;
+    startOrContinue: MouseEventHandler;
 }
 
 const MenuPause: React.FC<MenuPauseProps> = (props) => {
@@ -11,7 +12,7 @@ const MenuPause: React.FC<MenuPauseProps> = (props) => {
     } = props;
     const router = useRouter();
 
-    const back2Home = () => {
+    const back2Home: MouseEventHandler = (e) => {
         router.push('/');
     }
 
