@@ -1,5 +1,5 @@
 
-import { ComponentType, RefAttributes, useCallback, useEffect, useRef, useState } from 'react';
+import { ComponentType, MouseEventHandler, RefAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import styles from './index.module.sass';
 import MenuPause from './components/MenuPause';
 import Tips from './components/Tips';
@@ -8,7 +8,7 @@ type ThreeDomProps = {}
 
 type ThreeDomHandle = {
     updateFn: () => void;
-    restart: () => void;
+    restartFn: () => void;
 }
 
 const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<ThreeDomHandle>>) => {
@@ -35,7 +35,7 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
                         gap: 0,
                         total: 0,
                     };
-                    wrappedRef.current?.restart();
+                    wrappedRef.current?.restartFn();
                     return;
                 }
             }
@@ -81,14 +81,14 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
         }, [isPause]);
 
         // start
-        const startOrContinue = useCallback(() => {
+        const startOrContinue: MouseEventHandler = useCallback((e) => {
             setIsPause(false);
         }, [setIsPause]);
 
         return <div className='threeContainer'>
             <Wrapped ref={wrappedRef} />
-            {isPause && <MenuPause startOrContinue={startOrContinue} />}
             <Tips />
+            {isPause && <MenuPause startOrContinue={startOrContinue} />}
             <div className={styles.showTime} ref={timerRef} />
         </div>;
     }

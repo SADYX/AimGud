@@ -75,4 +75,3 @@ export const generateAxesHelper = (length: number = 100) => {
     return axis;
 }
 
-
