@@ -1,39 +1,62 @@
 import styles from './index.module.sass';
 import { useRouter } from 'next/router';
-import { MouseEventHandler } from 'react';
+import { GameStatus } from 'components/AimgudSceneHoc';
 
 type MenuPauseProps = {
-    startOrContinue: MouseEventHandler;
+    startOrContinue: () => void;
+    restart: () => void;
+    status: GameStatus;
 }
 
 const MenuPause: React.FC<MenuPauseProps> = (props) => {
     const {
         startOrContinue,
+        restart,
+        status,
     } = props;
     const router = useRouter();
 
-    const back2Home: MouseEventHandler = (e) => {
+    const back2Home = () => {
         router.push('/');
     }
 
-    return <div className={styles.container}>
-        <div>
-            <div className={styles.menuContainer}>
-                <div
-                    className={styles.menuItem}
-                    onClick={startOrContinue}
-                >
-                    start
-                </div>
-                <div
-                    className={styles.menuItem}
-                    onClick={back2Home}
-                >
-                    back to home
+    return <>
+        {status !== GameStatus.processing && (
+            <div className={styles.container}>
+                <div>
+                    <div className={styles.menuContainer}>
+                        {status === GameStatus.ender && (
+                            <div className={styles.prefix}>time's up!</div>
+                        )}
+                        {status === GameStatus.ender
+                            ? (
+                                <div
+                                    className={styles.menuItem}
+                                    onClick={restart}
+                                >
+                                    restart
+                                </div>
+                            )
+                            : (
+                                <div
+                                    className={styles.menuItem}
+                                    onClick={startOrContinue}
+                                >
+                                    start
+                                </div>
+                            )}
+
+                        <div
+                            className={styles.menuItem}
+                            onClick={back2Home}
+                        >
+                            back to home
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>;
+        )}
+    </>
 }
 
 export default MenuPause;

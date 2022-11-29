@@ -11,6 +11,12 @@ type ThreeDomHandle = {
     restartFn: () => void;
 }
 
+enum GameStatus {
+    processing,
+    pause,
+    ender,
+}
+
 const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<ThreeDomHandle>>) => {
     const AimgudScene = (porps: ThreeDomProps) => {
         const wrappedRef = useRef<ThreeDomHandle>(null);
@@ -20,28 +26,42 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
             gap: 0,
             total: 0,
         });
-        const [isPause, setIsPause] = useState(true);
+        const [status, setStatus] = useState<GameStatus>(GameStatus.pause);
+
+        const startOrContinue = useCallback(() => {
+            setStatus(v => v === GameStatus.pause
+                ? GameStatus.processing : GameStatus.pause);
+        }, []);
+
+        const restart = useCallback(() => {
+            timer.current = {
+                start: -1,
+                gap: 0,
+                total: 0,
+            };
+            wrappedRef.current?.restartFn();
+            setStatus(GameStatus.processing);
+        }, []);
 
         // window events
         useEffect(() => {
             const onKeyDown = (e: KeyboardEvent) => {
                 if (e.key === 'Escape') { // 'Esc'
-                    setIsPause(v => !v);
+                    setStatus(v => {
+                        if (v === GameStatus.processing) return GameStatus.pause;
+                        if (v === GameStatus.pause) return GameStatus.processing;
+                        return v;
+                    });
                     return;
                 }
                 if (e.key === ' ') { // 'Space'
-                    timer.current = {
-                        start: -1,
-                        gap: 0,
-                        total: 0,
-                    };
-                    wrappedRef.current?.restartFn();
+                    restart();
                     return;
                 }
             }
 
             const onVisibilityChange = () => {
-                setIsPause(true);
+                setStatus(v => v === GameStatus.processing ? GameStatus.pause : v);
             }
 
             window.addEventListener('keydown', onKeyDown);
@@ -51,11 +71,11 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
                 window.removeEventListener('keydown', onKeyDown);
                 window.removeEventListener('visibilitychange', onVisibilityChange);
             }
-        }, []);
+        }, [restart]);
 
         // render three scene and update timer
         useEffect(() => {
-            if (isPause) return;
+            if (status !== GameStatus.processing) return;
 
             let frameId = 0;
 
@@ -65,7 +85,12 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
                     timer.current.start = stamp;
                 }
                 timer.current.gap = stamp - timer.current.start;
-                timerRef.current && (timerRef.current.innerText = `${((timer.current.total + timer.current.gap) / 1000).toFixed(2)} s`);
+                let actual = 60000 - (timer.current.total + timer.current.gap);
+                if (actual <= 0) {
+                    actual = 0;
+                    setStatus(GameStatus.ender);
+                }
+                timerRef.current && (timerRef.current.innerText = `${(actual / 1000).toFixed(2)}`);
                 // invoke wrapped component function
                 wrappedRef.current?.updateFn();
             }
@@ -78,23 +103,24 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
                 timer.current.gap = 0;
                 cancelAnimationFrame(frameId);
             }
-        }, [isPause]);
+        }, [status]);
 
-        // start
-        const startOrContinue: MouseEventHandler = useCallback((e) => {
-            setIsPause(false);
-        }, [setIsPause]);
+
 
         return <div className='threeContainer'>
             <Wrapped ref={wrappedRef} />
             <Tips />
-            {isPause && <MenuPause startOrContinue={startOrContinue} />}
-            <div className={styles.showTime} ref={timerRef} />
+            <MenuPause
+                startOrContinue={startOrContinue}
+                restart={restart}
+                status={status}
+            />
+            <div className={styles.showTime} ref={timerRef}>60.00</div>
         </div>;
     }
     return AimgudScene;
 }
 
-export { aimgudSceneGetter };
+export { aimgudSceneGetter, GameStatus };
 
 export type { ThreeDomProps, ThreeDomHandle };

@@ -1,7 +1,7 @@
 import styles from './index.module.sass';
 
 type GameInfoProps = {
-    info: [string, string | number][],
+    info: [string, string | number, boolean][],
 }
 
 const GameInfo: React.FC<GameInfoProps> = (props) => {
@@ -9,9 +9,9 @@ const GameInfo: React.FC<GameInfoProps> = (props) => {
 
 
     return <div className={styles.container}>
-        {info.map(([title, content]) => <>
-            <div className={styles.title}>{title}:</div>
-            <div className={styles.content}>{content}</div>
+        {info.map(([title, content, isImportant]) => <>
+            <div className={`${styles.title} ${isImportant && styles.impo}`}>{title}:</div>
+            <div className={`${styles.content} ${isImportant && styles.impo}`}>{content}</div>
         </>)}
     </div>
 }

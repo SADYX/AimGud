@@ -25,8 +25,6 @@ const generateNoOverlapPoint = (stack: [number, number][]) => {
 		return isOverlapInStack;
 	}
 
-	// max = SIDE_LENGTH - R
-	// min = R
 	let point: [number, number] = [
 		Math.random() * (SIDE_LENGTH - 2 * R) - (SIDE_LENGTH - 2 * R) / 2,
 		Math.random() * (SIDE_LENGTH - 2 * R) - (SIDE_LENGTH - 2 * R) / 2,
@@ -191,10 +189,11 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 	return <>
 		<div className='three' ref={threeRef} />
 		<GameInfo info={[
-			['hit', gameStat.hit],
-			['total', gameStat.total],
-			['acc', `${(gameStat.acc * 100).toFixed(2)}%`],
-			['window size', `${gameStat.windowInnerWidth} * ${gameStat.windowInnerHeight}`]
+			['score', (gameStat.hit * gameStat.acc).toFixed(2), true],
+			['hit', gameStat.hit, false],
+			['total', gameStat.total, false],
+			['accuracy', `${(gameStat.acc * 100).toFixed(2)}%`, false],
+			['window size', `${gameStat.windowInnerWidth} * ${gameStat.windowInnerHeight}`, false]
 		]} />
 	</>
 });
