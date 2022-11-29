@@ -26,7 +26,7 @@ const MenuPause: React.FC<MenuPauseProps> = (props) => {
                 <div>
                     <div className={styles.menuContainer}>
                         {status === GameStatus.ender && (
-                            <div className={styles.prefix}>time's up!</div>
+                            <div className={styles.prefix}>time&apos;s up!</div>
                         )}
                         {status === GameStatus.ender
                             ? (
