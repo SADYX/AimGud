@@ -25,8 +25,6 @@ const generateNoOverlapPoint = (stack: [number, number][]) => {
 		return isOverlapInStack;
 	}
 
-	// max = SIDE_LENGTH - R
-	// min = R
 	let point: [number, number] = [
 		Math.random() * (SIDE_LENGTH - 2 * R) - (SIDE_LENGTH - 2 * R) / 2,
 		Math.random() * (SIDE_LENGTH - 2 * R) - (SIDE_LENGTH - 2 * R) / 2,
