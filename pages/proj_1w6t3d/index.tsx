@@ -197,7 +197,9 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 	}, [gameStat.hit, gameStat.total]);
 
 	return <>
-		<div className='three' ref={threeRef} />
+		<div className='three' ref={threeRef}>
+			<img className='fakePointer' src='images/cursor.png' />
+		</div>
 		<GameInfo info={[
 			['score', (gameStat.hit * gameStat.acc).toFixed(2), true],
 			['hit', gameStat.hit, false],
