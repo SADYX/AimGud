@@ -46,6 +46,7 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
         // window events
         useEffect(() => {
             const onKeyDown = (e: KeyboardEvent) => {
+                e.preventDefault();
                 if (e.key === 'Escape') { // 'Esc'
                     setStatus(v => {
                         if (v === GameStatus.processing) return GameStatus.pause;
