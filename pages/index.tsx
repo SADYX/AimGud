@@ -7,6 +7,9 @@ const Home = () => {
 			<Link href='/proj_1w6t'>
 				1w6t
 			</Link>
+			<Link href='/proj_1w6t3d'>
+				1w6t3d
+			</Link>
 		</div>
 	)
 }

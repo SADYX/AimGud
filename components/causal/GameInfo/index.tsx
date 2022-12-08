@@ -7,7 +7,6 @@ type GameInfoProps = {
 const GameInfo: React.FC<GameInfoProps> = (props) => {
     const { info } = props;
 
-
     return <div className={styles.container}>
         {info.map(([title, content, isImportant]) => <>
             <div className={`${styles.title} ${isImportant && styles.impo}`}>{title}:</div>

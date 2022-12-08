@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { OrbitControls } from '@/lib/controls/OrbitControls';
+import { PointerLockControls } from '@/lib/controls/PointerLockControls';
 
-export const generatePerspectiveCamera = (dom: HTMLDivElement) => {
+export const generatePerspectiveCamera = (dom: HTMLDivElement, fov = 75) => {
     const camera = new THREE.PerspectiveCamera(
-        75,
+        fov,
         dom.clientWidth / dom.clientHeight,
         1,
         100000,
@@ -45,6 +46,14 @@ export const generateOrbitControls = (
     orbitControl.minDistance = 0;
     orbitControl.target.set(0, 0, 0);
     return orbitControl;
+}
+
+export const generatePointerLockControls = (
+    camera: THREE.Camera,
+    renderer: THREE.Renderer,
+) => {
+    const control = new PointerLockControls(camera, renderer.domElement);
+    return control;
 }
 
 
