@@ -31,9 +31,9 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
 
         const startOrContinue = useCallback(() => {
             const now = performance.now();
-            // this is why high frequency start must be limited
+            // this is why high frequency "start" must be limited
             // https://discourse.threejs.org/t/how-to-avoid-pointerlockcontrols-error/33017
-            if(pauseStamp.current !== undefined && now - pauseStamp.current < 1500){
+            if (pauseStamp.current !== undefined && now - pauseStamp.current < 1500) {
                 console.log('high frequncy');
                 return;
             }
@@ -54,7 +54,6 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
         // window events
         useEffect(() => {
             const onKeyDown = (e: KeyboardEvent) => {
-                e.preventDefault();
                 if (e.key === 'Escape') { // 'Esc'
                     const now = performance.now();
                     pauseStamp.current = now;
@@ -111,8 +110,6 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
                 cancelAnimationFrame(frameId);
             }
         }, [status]);
-
-
 
         return <div className='threeContainer'>
             <Wrapped ref={wrappedRef} />

@@ -1,6 +1,6 @@
 import styles from './index.module.sass';
 import { useRouter } from 'next/router';
-import { GameStatus } from 'components/AimgudSceneHoc';
+import { GameStatus } from 'components/hoc/AimgudSceneHoc';
 
 type MenuPauseProps = {
     startOrContinue: () => void;

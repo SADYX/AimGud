@@ -1,16 +1,16 @@
-import { threeInit, ThreeParams, SIDE_LENGTH, R, generatePoint } from 'components/threeInit/proj_1w6t3d';
+import { threeInit, ThreeParams, SIDE_LENGTH, R, generateBall } from 'components/threeInit/proj_1w6t3d';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { aimgudSceneGetter, ThreeDomHandle, ThreeDomProps } from 'components/AimgudSceneHoc';
+import { aimgudSceneGetter, ThreeDomHandle, ThreeDomProps } from 'components/hoc/AimgudSceneHoc';
 import * as THREE from 'three';
 import { getPointer } from '@/utils/gudUtils';
-import GameInfo from 'components/GameInfo';
+import GameInfo from 'components/causal/GameInfo';
 
 const TARGET_COUNT = 6;
-const POINT_Y = 5;
+const _SIDE_LENGTH = SIDE_LENGTH / 4 * 3;
 
 const getIsOverlap = (point1: [number, number], point2: [number, number]) => {
 	const distance = Math.sqrt(Math.pow(point1[0] - point2[0], 2) + Math.pow(point1[1] - point2[1], 2));
-	return distance <= R * 2;
+	return distance <= R * 5;
 }
 
 const generateNoOverlapPoint = (stack: [number, number][]) => {
@@ -26,16 +26,20 @@ const generateNoOverlapPoint = (stack: [number, number][]) => {
 	}
 
 	let point: [number, number] = [
-		Math.random() * (SIDE_LENGTH - 2 * R) - (SIDE_LENGTH - 2 * R) / 2,
-		Math.random() * (SIDE_LENGTH - 2 * R) - (SIDE_LENGTH - 2 * R) / 2,
+		Math.random() * (_SIDE_LENGTH - 2 * R) - (_SIDE_LENGTH - 2 * R) / 2,
+		Math.random() * (_SIDE_LENGTH - 2 * R) - (_SIDE_LENGTH - 2 * R) / 2,
 	];
 	while (getIsOverlapInStack(point)) {
 		point = [
-			Math.random() * (SIDE_LENGTH - 2 * R) - (SIDE_LENGTH - 2 * R) / 2,
-			Math.random() * (SIDE_LENGTH - 2 * R) - (SIDE_LENGTH - 2 * R) / 2,
+			Math.random() * (_SIDE_LENGTH - 2 * R) - (_SIDE_LENGTH - 2 * R) / 2,
+			Math.random() * (_SIDE_LENGTH - 2 * R) - (_SIDE_LENGTH - 2 * R) / 2,
 		];
 	}
 	return point;
+}
+
+const getRandomX = () => {
+	return Math.random() * 30 + 670 - R;
 }
 
 // generate {count} points
@@ -78,12 +82,12 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 	const restart = useCallback(() => {
 		if (!threeParams) return;
 		const { scene } = threeParams;
-		const points = scene.children.find(({ name }) => name === 'points');
+		const points = scene.children.find(({ name }) => name === 'balls');
 		if (!points) return;
 		const positions = initRandomPoints(TARGET_COUNT);
 		points.children.forEach((point, i) => {
-			const [x, z] = positions[i];
-			point.position.set(x, POINT_Y, z);
+			const [y, z] = positions[i];
+			point.position.set(getRandomX(), y, z);
 		});
 		setGameStat(v => ({
 			...v,
@@ -115,12 +119,12 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 		const points = initRandomPoints(TARGET_COUNT);
 
 		const pointGroup = new THREE.Group();
-		points.forEach(([x, z]) => {
-			const pointMesh = generatePoint();
-			pointMesh.position.set(x, POINT_Y, z);
+		points.forEach(([y, z]) => {
+			const pointMesh = generateBall();
+			pointMesh.position.set(getRandomX(), y, z);
 			pointGroup.add(pointMesh);
 		});
-		pointGroup.name = 'points';
+		pointGroup.name = 'balls';
 		scene.add(pointGroup);
 
 		// render the first frame
@@ -158,16 +162,17 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 			if (!_dom) return;
 			const pointer = getPointer(evt, _dom);
 			const raycaster = new THREE.Raycaster();
-			raycaster.setFromCamera(pointer, camera);
+			const direct = controls.getDirection(new THREE.Vector3());
+			raycaster.set(camera.position.clone(), direct);
 			const intersect = raycaster.intersectObject(scene, true)[0];
-			if (intersect && intersect.object && intersect.object.name === 'point') {
+			if (intersect && intersect.object && intersect.object.name === 'ball') {
 				const point = intersect.object;
 				const stack: [number, number][] = [];
 				pointGroup.children.forEach((p) => {
 					p.uuid !== point.uuid && stack.push([p.position.x, p.position.z]);
 				});
-				const [x, z] = generateNoOverlapPoint(stack);
-				point.position.set(x, POINT_Y, z);
+				const [y, z] = generateNoOverlapPoint(stack);
+				point.position.set(getRandomX(), y, z);
 				setGameStat(v => ({
 					...v,
 					hit: v.hit + 1,
@@ -198,7 +203,7 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 
 	return <>
 		<div className='three' ref={threeRef}>
-			<img className='fakePointer' src='images/cursor.png' />
+			<img className='fakePointer' src='images/cursor.png' alt='' />
 		</div>
 		<GameInfo info={[
 			['score', (gameStat.hit * gameStat.acc).toFixed(2), true],

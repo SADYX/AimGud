@@ -1,9 +1,9 @@
 import { threeInit, ThreeParams, SIDE_LENGTH, R, generatePoint } from 'components/threeInit/proj_1w6t';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { aimgudSceneGetter, ThreeDomHandle, ThreeDomProps } from 'components/AimgudSceneHoc';
+import { aimgudSceneGetter, ThreeDomHandle, ThreeDomProps } from 'components/hoc/AimgudSceneHoc';
 import * as THREE from 'three';
 import { getPointer } from '@/utils/gudUtils';
-import GameInfo from 'components/GameInfo';
+import GameInfo from 'components/causal/GameInfo';
 
 const TARGET_COUNT = 6;
 const POINT_Y = 5;
