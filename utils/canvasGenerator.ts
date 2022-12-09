@@ -31,3 +31,7 @@ export const drawCellsMap = () => {
 
     return canvas;
 }
+
+export const drawBackground = () => {
+
+}

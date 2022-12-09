@@ -27,17 +27,8 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
             total: 0,
         });
         const [status, setStatus] = useState<GameStatus>(GameStatus.pause);
-        const pauseStamp = useRef<number>();
 
         const startOrContinue = useCallback(() => {
-            const now = performance.now();
-            // this is why high frequency "start" must be limited
-            // https://discourse.threejs.org/t/how-to-avoid-pointerlockcontrols-error/33017
-            if (pauseStamp.current !== undefined && now - pauseStamp.current < 1500) {
-                console.log('high frequncy');
-                return;
-            }
-            pauseStamp.current = now;
             setStatus(GameStatus.processing);
         }, []);
 
@@ -55,8 +46,6 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
         useEffect(() => {
             const onKeyDown = (e: KeyboardEvent) => {
                 if (e.key === 'Escape') { // 'Esc'
-                    const now = performance.now();
-                    pauseStamp.current = now;
                     setStatus(GameStatus.pause);
                     return;
                 }
@@ -101,7 +90,7 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
                 wrappedRef.current?.updateFn();
             }
 
-            requestAnimationFrame(update);
+            frameId = requestAnimationFrame(update);
 
             return () => {
                 timer.current.total += timer.current.gap;
