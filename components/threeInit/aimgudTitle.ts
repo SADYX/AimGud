@@ -18,7 +18,7 @@ type ThreeParams = {
 
 const generateLightsFor3D = () => {
     const group = new THREE.Group();
-    const light1 = new THREE.AmbientLight(0xffffff, 0.2);
+    const light1 = new THREE.AmbientLight(0xffffff, 0.3);
     group.add(light1);
     return group;
 }
@@ -30,6 +30,7 @@ const addText3D = (scene: THREE.Scene) => {
         (response: any) => {
             const font = response;
             const group = new THREE.Group();
+            group.name = 'title';
 
             // A
             const geo1 = new TextGeometry('A', {
@@ -51,7 +52,7 @@ const addText3D = (scene: THREE.Scene) => {
                 height: 10,
                 curveSegments: 48,
             });
-            const mat2 = new THREE.MeshPhongMaterial({
+            const mat2 = new THREE.MeshLambertMaterial({
                 color: 0xf17f22,
             });
             const mesh2 = new THREE.Mesh(geo2, mat2);
@@ -62,31 +63,27 @@ const addText3D = (scene: THREE.Scene) => {
             mesh2.position.set(-length / 2 + (max1.x - min1.x), - (max2.y - min2.y) / 2, 0);
 
             group.add(mesh1, mesh2);
-            group.name = 'title';
-            group.castShadow = true;
 
             scene.add(group);
         }
     );
 }
 
+
 const threeInit = (dom: HTMLDivElement) => {
     const camera = generatePerspectiveCamera(dom, 60);
     const renderer = generateRenderer(dom);
     const scene = generateScene();
-    const lights = generateLights();
     const lights2 = generateLightsFor3D();
     const controls = generateOrbitControls(camera, renderer);
-    const axes = generateAxesHelper(1000);
 
-    camera.position.set(0, 0, 200);
+    renderer.shadowMap.enabled = true;
+    camera.position.set(0, 0, 150);
     camera.lookAt(0, 0, 0);
 
     // add stuff
     scene.add(
-        lights,
-        lights2,
-        axes,
+        // lights2,
     );
 
     addText3D(scene);

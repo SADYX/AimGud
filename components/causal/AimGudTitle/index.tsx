@@ -22,16 +22,20 @@ const AimGudTitle = () => {
             scene,
         } = params;
 
-        const roundingLight = new THREE.PointLight(0xffffff, 0.6);
-        roundingLight.position.set(0, 100, 0);
-        scene.add(roundingLight);
+        const roundingLight1 = new THREE.PointLight(0x4df244, 1);
+        roundingLight1.position.set(0, 0, 0);
+        scene.add(roundingLight1);
+        const roundingLight2 = new THREE.PointLight(0xf17f22, 1);
+        roundingLight2.position.set(0, 0, 0);
+        scene.add(roundingLight2);
 
         let frameId = 0;
 
         const update = (stamp: number) => {
             frameId = requestAnimationFrame(update);
-            const [x, z] = getCirclePoint(stamp / 500, 500);
-            roundingLight.position.set(x, 300, z);
+            const [x, z] = getCirclePoint(stamp / 800, 500);
+            roundingLight1.position.set(x, 0, z);
+            roundingLight2.position.set(-x, 0, -z);
 
             const text = scene.children.find(({ name }) => name === 'title');
             renderer.render(scene, camera);
@@ -46,7 +50,7 @@ const AimGudTitle = () => {
     }, []);
 
     return <>
-        <div className='three' ref={threeRef} style={{ cursor: 'pointer' }} />
+        <div className='three' ref={threeRef} />
     </>
 }
 
