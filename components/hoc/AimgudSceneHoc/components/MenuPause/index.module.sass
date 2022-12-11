@@ -36,6 +36,17 @@
                 align-items: center
                 justify-content: center
                 cursor: pointer
+                position: relative
 
                 &:not(:last-child)
                     margin-bottom: 10px
+
+                &.loading
+                    pointer-events: none
+                    cursor: pointer
+                    opacity: 0.6
+
+                .spinner
+                    position: absolute
+                    top: 30%
+                    right: 10%
