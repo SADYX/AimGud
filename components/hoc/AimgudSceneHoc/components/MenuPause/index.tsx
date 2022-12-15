@@ -8,6 +8,7 @@ type MenuPauseProps = {
     startOrContinue: () => void;
     restart: () => void;
     status: GameStatus;
+    isPointerLocker: boolean;
 }
 
 const MenuPause: React.FC<MenuPauseProps> = (props) => {
@@ -15,6 +16,7 @@ const MenuPause: React.FC<MenuPauseProps> = (props) => {
         startOrContinue,
         restart,
         status,
+        isPointerLocker,
     } = props;
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(false);
@@ -26,7 +28,7 @@ const MenuPause: React.FC<MenuPauseProps> = (props) => {
     // this is why high frequency "start" must be limited
     // https://discourse.threejs.org/t/how-to-avoid-pointerlockcontrols-error/33017
     useEffect(() => {
-        if (status === GameStatus.processing) return;
+        if (status === GameStatus.processing || !isPointerLocker) return;
 
         setLoading(true);
         let frameId = 0;
@@ -43,7 +45,7 @@ const MenuPause: React.FC<MenuPauseProps> = (props) => {
         return () => {
             cancelAnimationFrame(frameId);
         }
-    }, [status]);
+    }, [status, isPointerLocker]);
 
     return <>
         {status !== GameStatus.processing && (

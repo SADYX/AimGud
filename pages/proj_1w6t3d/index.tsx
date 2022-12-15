@@ -135,12 +135,10 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 			windowInnerHeight: window.innerHeight,
 		}));
 
-		// simulate 'Escape' key press event
-		// bcz unlock controls consume the event and fail to trigger the keydown event
-		controls.addEventListener('unlock', () => {
+		const escTrigger = () => {
 			const event = new KeyboardEvent('keydown', { 'key': 'Escape' });
 			window.dispatchEvent(event);
-		});
+		}
 
 		const onResize = () => {
 			const {
@@ -186,10 +184,14 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 
 		window.addEventListener('resize', onResize);
 		dom.addEventListener('mousedown', onMouseDown);
+		// simulate 'Escape' key press event
+		// Unlock controls will consume the event and fail to trigger the keydown event
+		controls.addEventListener('unlock', escTrigger);
 
 		return () => {
 			window.removeEventListener('resize', onResize);
 			dom.removeEventListener('mousedown', onMouseDown);
+			controls.removeEventListener('unlock', escTrigger);
 		}
 	}, []);
 
@@ -217,6 +219,6 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 
 ThreeDom.displayName = 'ThreeDom';
 
-const Proj_1w6t3d = aimgudSceneGetter(ThreeDom);
+const Proj_1w6t3d = aimgudSceneGetter(ThreeDom, true);
 
 export default Proj_1w6t3d;
