@@ -6,6 +6,7 @@ import 'animate.css';
 import Image, { StaticImageData } from 'next/image';
 import img_1w6t from '../public/images/proj/1w6t.png';
 import img_1w6t3d from '../public/images/proj/1w6t3d.png';
+import { GithubOutlined } from '@ant-design/icons';
 
 const ROUTE_MAPPER: [string, string, StaticImageData][] = [
 	['1 wall 6 targets', '/proj_1w6t', img_1w6t],
@@ -46,6 +47,10 @@ const Home = () => {
 		router.push(url);
 	}
 
+	const openGithub = () => {
+		window.open('https://github.com/SADYX/AimGud');
+	}
+
 	return (
 		<div className={styles.container}>
 			<div className={styles.content}>
@@ -63,6 +68,9 @@ const Home = () => {
 						/>
 					</>))}
 				</div>
+			</div>
+			<div className={styles.deco}>
+				<GithubOutlined className={styles.icon} onClick={openGithub} />
 			</div>
 		</div>
 	)
