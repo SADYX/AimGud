@@ -3,18 +3,18 @@ import Link from 'next/link'
 import AimGudTitle from 'components/causal/AimGudTitle';
 import { useRouter } from 'next/router';
 import 'animate.css';
-import Image from 'next/image';
+import Image, { StaticImageData } from 'next/image';
 import img_1w6t from '../public/images/proj/1w6t.png';
 import img_1w6t3d from '../public/images/proj/1w6t3d.png';
 
-const ROUTE_MAPPER = [
+const ROUTE_MAPPER: [string, string, StaticImageData][] = [
 	['1 wall 6 targets', '/proj_1w6t', img_1w6t],
 	['1 wall 6 targets 3D', '/proj_1w6t3d', img_1w6t3d],
 ];
 
 type ListItemProps = {
 	name: string;
-	imgUrl: string;
+	imgUrl: StaticImageData;
 	clickFn: () => void;
 	index: number;
 }
