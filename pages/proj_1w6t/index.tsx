@@ -200,6 +200,6 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 
 ThreeDom.displayName = 'ThreeDom';
 
-const Proj_1w6t = aimgudSceneGetter(ThreeDom);
+const Proj_1w6t = aimgudSceneGetter(ThreeDom, false);
 
 export default Proj_1w6t;

@@ -17,7 +17,10 @@ enum GameStatus {
     ender,
 }
 
-const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<ThreeDomHandle>>) => {
+const aimgudSceneGetter = (
+    Wrapped: ComponentType<ThreeDomProps & RefAttributes<ThreeDomHandle>>,
+    isPointerLocker: boolean,
+) => {
     const AimgudScene = (porps: ThreeDomProps) => {
         const wrappedRef = useRef<ThreeDomHandle>(null);
         const timerRef = useRef<HTMLDivElement>(null);
@@ -27,6 +30,11 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
             total: 0,
         });
         const [status, setStatus] = useState<GameStatus>(GameStatus.pause);
+
+        useEffect(() => {
+            console.log('status: ' + status.toString());
+
+        }, [status]);
 
         const startOrContinue = useCallback(() => {
             setStatus(GameStatus.processing);
@@ -46,6 +54,8 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
         useEffect(() => {
             const onKeyDown = (e: KeyboardEvent) => {
                 if (e.key === 'Escape') { // 'Esc'
+                    console.log('why?');
+
                     setStatus(GameStatus.pause);
                     return;
                 }
@@ -107,6 +117,7 @@ const aimgudSceneGetter = (Wrapped: ComponentType<ThreeDomProps & RefAttributes<
                 startOrContinue={startOrContinue}
                 restart={restart}
                 status={status}
+                isPointerLocker={isPointerLocker}
             />
             <div className={styles.showTime} ref={timerRef}>60.00</div>
         </div>;
