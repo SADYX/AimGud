@@ -3,10 +3,13 @@ import Link from 'next/link'
 import AimGudTitle from 'components/causal/AimGudTitle';
 import { useRouter } from 'next/router';
 import 'animate.css';
+import Image from 'next/image';
+import img_1w6t from '../public/images/proj/1w6t.png';
+import img_1w6t3d from '../public/images/proj/1w6t3d.png';
 
 const ROUTE_MAPPER = [
-	['1 wall 6 targets', '/proj_1w6t', 'images/proj/1w6t.png'],
-	['1 wall 6 targets 3D', '/proj_1w6t3d', 'images/proj/1w6t3d.png'],
+	['1 wall 6 targets', '/proj_1w6t', img_1w6t],
+	['1 wall 6 targets 3D', '/proj_1w6t3d', img_1w6t3d],
 ];
 
 type ListItemProps = {
@@ -30,7 +33,7 @@ const ListItem: React.FC<ListItemProps> = (props) => {
 		onClick={clickFn}
 	>
 		<div className={styles.imgContainer}>
-			<img src={imgUrl} alt='' />
+			<Image src={imgUrl} alt='' />
 		</div>
 		<div className={styles.nameContainer}>{name}</div>
 	</div>
