@@ -4,6 +4,8 @@ import { aimgudSceneGetter, ThreeDomHandle, ThreeDomProps } from 'components/hoc
 import * as THREE from 'three';
 import { getPointer } from '@/utils/gudUtils';
 import GameInfo from 'components/causal/GameInfo';
+import Image from 'next/image';
+import cursor from '../../public/images/cursor.png';
 
 const TARGET_COUNT = 6;
 const _SIDE_LENGTH = SIDE_LENGTH / 4 * 3;
@@ -205,7 +207,7 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 
 	return <>
 		<div className='three' ref={threeRef}>
-			<img className='fakePointer' src='images/cursor.png' alt='' />
+			<Image className='fakePointer' src={cursor} alt='' />
 		</div>
 		<GameInfo info={[
 			['score', (gameStat.hit * gameStat.acc).toFixed(2), true],
