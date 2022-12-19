@@ -29,6 +29,16 @@ const AimGudTitle = () => {
         roundingLight2.position.set(0, 0, 0);
         scene.add(roundingLight2);
 
+        const onResize = () => {
+            const {
+                clientWidth: width,
+                clientHeight: height,
+            } = dom;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+            renderer.render(scene, camera);
+        }
+
         let frameId = 0;
 
         const update = (stamp: number) => {
@@ -42,9 +52,11 @@ const AimGudTitle = () => {
         }
 
         frameId = requestAnimationFrame(update);
+        window.addEventListener('resize', onResize);
 
         return () => {
             cancelAnimationFrame(frameId);
+            window.removeEventListener('resize', onResize);
         }
 
     }, []);

@@ -99,9 +99,17 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 		}));
 	}, [threeParams]);
 
+	// unlock pointer at the end
+	const ender = useCallback(() => {
+		if (!threeParams) return;
+		const { controls } = threeParams;
+		controls.unlock();
+	}, [threeParams]);
+
 	useImperativeHandle(ref, () => ({
 		updateFn: update,
 		restartFn: restart,
+		enderFn: ender,
 	}));
 
 	useEffect(() => {
@@ -157,10 +165,9 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 			}));
 		}
 
-		const onMouseDown = (evt: MouseEvent) => {
+		const onMouseDown = () => {
 			const _dom = threeRef.current;
 			if (!_dom) return;
-			const pointer = getPointer(evt, _dom);
 			const raycaster = new THREE.Raycaster();
 			const direct = controls.getDirection(new THREE.Vector3());
 			raycaster.set(camera.position.clone(), direct);

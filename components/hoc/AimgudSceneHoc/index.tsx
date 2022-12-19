@@ -9,6 +9,7 @@ type ThreeDomProps = {}
 type ThreeDomHandle = {
     updateFn: () => void;
     restartFn: () => void;
+    enderFn?: () => void;
 }
 
 enum GameStatus {
@@ -31,11 +32,6 @@ const aimgudSceneGetter = (
         });
         const [status, setStatus] = useState<GameStatus>(GameStatus.pause);
 
-        useEffect(() => {
-            console.log('status: ' + status.toString());
-
-        }, [status]);
-
         const startOrContinue = useCallback(() => {
             setStatus(GameStatus.processing);
         }, []);
@@ -54,9 +50,10 @@ const aimgudSceneGetter = (
         useEffect(() => {
             const onKeyDown = (e: KeyboardEvent) => {
                 if (e.key === 'Escape') { // 'Esc'
-                    console.log('why?');
-
-                    setStatus(GameStatus.pause);
+                    setStatus(_v => _v === GameStatus.ender
+                        ? GameStatus.ender
+                        : GameStatus.pause
+                    );
                     return;
                 }
                 if (e.key === ' ') { // 'Space'
@@ -80,6 +77,11 @@ const aimgudSceneGetter = (
 
         // render three scene and update timer
         useEffect(() => {
+            if (status === GameStatus.ender) {
+                setStatus(GameStatus.ender);
+                wrappedRef.current?.enderFn && wrappedRef.current.enderFn();
+                return;
+            }
             if (status !== GameStatus.processing) return;
 
             let frameId = 0;
