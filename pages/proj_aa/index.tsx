@@ -13,6 +13,7 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
     const isPressing = useRef<boolean>(false);
     const [threeParams, setThreeParams] = useState<ThreeParams>();
     const [gameStat, setGameStat] = useState({
+        score: 0,
         total: 0,
         hit: 0,
         acc: 0,
@@ -41,6 +42,13 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
             setGameStat((_v) => ({
                 ..._v,
                 hit: _v.hit + 1,
+                total: _v.total + 1,
+            }));
+        }
+        else {
+            setGameStat((_v) => ({
+                ..._v,
+                total: _v.total + 1,
             }));
         }
     }, [threeParams]);
@@ -52,9 +60,18 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 
     }, [threeParams]);
 
+    // unlock pointer at the end
+    const ender = useCallback(() => {
+        if (!threeParams) return;
+        const { controls } = threeParams;
+        controls.unlock();
+    }, [threeParams]);
+
+
     useImperativeHandle(ref, () => ({
         updateFn: update,
         restartFn: restart,
+        enderFn: ender,
     }));
 
     useEffect(() => {
@@ -71,7 +88,7 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
             ball,
         } = params;
 
-        ball.position.set(SIDE_LENGTH / 4, 0, 0)
+        ball.position.set(SIDE_LENGTH / 4, 0, 0);
 
         // render the first frame
         renderer.render(scene, camera);
@@ -89,15 +106,12 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
             camera.updateProjectionMatrix();
             renderer.setSize(width, height);
             renderer.render(scene, camera);
-
         }
 
         const onMouseDown = () => {
             const _dom = threeRef.current;
             if (!_dom) return;
             isPressing.current = true;
-
-
         }
 
         const onMouseUp = () => {
@@ -121,12 +135,21 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
         }
     }, []);
 
+    // calc acc&score
+    useEffect(() => {
+        setGameStat(v => ({
+            ...v,
+            acc: v.total === 0 ? 0 : v.hit / v.total,
+            score: +(v.hit * v.acc).toFixed(2),
+        }));
+    }, [gameStat.hit, gameStat.total]);
+
     return <>
         <div className='three' ref={threeRef} >
             <Image className='fakePointer' src={cursor} alt='' />
         </div>
         <GameInfo info={[
-            ['score', (gameStat.hit * gameStat.acc).toFixed(2), true],
+            ['score', gameStat.score, true],
             ['hit', gameStat.hit, false],
             ['total', gameStat.total, false],
             ['accuracy', `${(gameStat.acc * 100).toFixed(2)}%`, false],

@@ -54,6 +54,7 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 	const threeRef = useRef<HTMLDivElement>(null);
 	const [threeParams, setThreeParams] = useState<ThreeParams>();
 	const [gameStat, setGameStat] = useState({
+		score: 0,
 		total: 0,
 		hit: 0,
 		acc: 0,
@@ -178,18 +179,19 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 		}
 	}, []);
 
-	// calc acc
+	// calc acc&score
 	useEffect(() => {
 		setGameStat(v => ({
 			...v,
-			acc: gameStat.total === 0 ? 0 : gameStat.hit / gameStat.total,
+			acc: v.total === 0 ? 0 : v.hit / v.total,
+			score: +(v.hit * v.acc).toFixed(2),
 		}));
 	}, [gameStat.hit, gameStat.total]);
 
 	return <>
 		<div className='three' ref={threeRef} />
 		<GameInfo info={[
-			['score', (gameStat.hit * gameStat.acc).toFixed(2), true],
+			['score', gameStat.score, true],
 			['hit', gameStat.hit, false],
 			['total', gameStat.total, false],
 			['accuracy', `${(gameStat.acc * 100).toFixed(2)}%`, false],
