@@ -7,11 +7,60 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useSta
 import { aimgudSceneGetter, ThreeDomHandle, ThreeDomProps } from 'components/hoc/AimgudSceneHoc';
 import { SIDE_LENGTH, threeInit, ThreeParams } from 'components/threeInit/proj_aa';
 
+const R = SIDE_LENGTH / 4;
+const FAR_IN_FRAME = 0.3;
+
+type LonLat = {
+    longitude: number,
+    latitude: number,
+}
+
+const getVector3ByLonLat = (lonLat: LonLat) => {
+    const { longitude, latitude } = lonLat
+    const lon = longitude * Math.PI / 180;
+    const lat = latitude * Math.PI / 180;
+
+    const x = R * Math.cos(lat) * Math.cos(lon);
+    const y = R * Math.cos(lat) * Math.sin(lon);
+    const z = R * Math.sin(lat);
+
+    const pos = new THREE.Vector3(x, y, z);
+    return pos;
+}
+
+const getLonLatByVector3 = (vec: THREE.Vector3) => {
+    const lat = Math.asin(vec.z / R);
+    const lon = Math.asin(vec.y / R / Math.cos(lat));
+    return {
+        longitude: lon * 180 / Math.PI,
+        latitude: lat * 180 / Math.PI,
+    } as LonLat;
+}
+
+// "random"
+const generateRandomLonLat = () => {
+    const minLat = -45;
+    const maxLat = 45;
+    const minLon = -180;
+    const maxLon = 180;
+
+    const longitude = Math.random() * (maxLon - minLon) + minLon;
+    const latitude = Math.random() * (maxLat - minLat) + minLat;
+
+    return {
+        longitude,
+        latitude,
+    }
+}
 
 const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
     const threeRef = useRef<HTMLDivElement>(null);
     const isPressing = useRef<boolean>(false);
     const [threeParams, setThreeParams] = useState<ThreeParams>();
+    const trend = useRef<LonLat>({
+        longitude: 0,
+        latitude: 0,
+    });
     const [gameStat, setGameStat] = useState({
         score: 0,
         total: 0,
@@ -30,9 +79,26 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
             camera,
             controls,
             raycaster,
+            ball,
         } = threeParams;
         controls.lock();
         renderer.render(scene, camera);
+
+        // move ball
+        const cur = getLonLatByVector3(ball.position);
+        const end = trend.current;
+        const lonGap = end.longitude - cur.longitude;
+        const latGap = end.latitude - cur.latitude;
+        // normalize
+        const norm = Math.sqrt(Math.pow(lonGap, 2) + Math.pow(latGap, 2));
+        const targetLon = cur.longitude + lonGap / norm * FAR_IN_FRAME;
+        const targetLat = cur.latitude + latGap / norm * FAR_IN_FRAME;
+        const targetPos = getVector3ByLonLat({
+            longitude: targetLon,
+            latitude: targetLat,
+        });
+        ball.position.copy(targetPos);
+
         if (!isPressing.current) return;
         const direct = controls.getDirection(new THREE.Vector3());
         raycaster.set(camera.position.clone(), direct);
@@ -51,6 +117,8 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
                 total: _v.total + 1,
             }));
         }
+
+
     }, [threeParams]);
 
     // reset game
@@ -80,6 +148,15 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
         const params = threeInit(dom);
         setThreeParams(params);
 
+        // update ball's moving trend every 0.5 ~ 2 sec
+        let timer: NodeJS.Timer;
+        const interFn = () => {
+            const randomLonLat = generateRandomLonLat();
+            trend.current = randomLonLat;
+            timer = setTimeout(interFn, Math.floor(Math.random() * 1500) + 500);
+        };
+        interFn();
+
         const {
             camera,
             renderer,
@@ -88,7 +165,7 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
             ball,
         } = params;
 
-        ball.position.set(SIDE_LENGTH / 4, 0, 0);
+        ball.position.set(0, 0, -R);
 
         // render the first frame
         renderer.render(scene, camera);
@@ -132,6 +209,7 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
             dom.removeEventListener('mousedown', onMouseDown);
             dom.removeEventListener('mouseup', onMouseUp);
             controls.removeEventListener('unlock', escTrigger);
+            timer && clearTimeout(timer);
         }
     }, []);
 
@@ -140,7 +218,7 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
         setGameStat(v => ({
             ...v,
             acc: v.total === 0 ? 0 : v.hit / v.total,
-            score: +(v.hit * v.acc).toFixed(2),
+            score: v.hit,
         }));
     }, [gameStat.hit, gameStat.total]);
 
