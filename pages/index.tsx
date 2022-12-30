@@ -1,5 +1,4 @@
 import styles from '../styles/Home.module.sass'
-import Link from 'next/link'
 import AimGudTitle from 'components/causal/AimGudTitle';
 import { useRouter } from 'next/router';
 import 'animate.css';
@@ -11,6 +10,7 @@ import { GithubOutlined } from '@ant-design/icons';
 const ROUTE_MAPPER: [string, string, StaticImageData][] = [
 	['1 wall 6 targets', '/proj_1w6t', img_1w6t],
 	['1 wall 6 targets 3D', '/proj_1w6t3d', img_1w6t3d],
+	['air angelic', '/proj_aa', img_1w6t3d],
 ];
 
 type ListItemProps = {
