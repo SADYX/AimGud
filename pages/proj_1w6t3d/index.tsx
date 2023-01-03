@@ -84,7 +84,7 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 	// reset game
 	const restart = useCallback(() => {
 		if (!threeParams) return;
-		const { scene } = threeParams;
+		const { scene, resetCamera } = threeParams;
 		const points = scene.children.find(({ name }) => name === 'balls');
 		if (!points) return;
 		const positions = initRandomPoints(TARGET_COUNT);
@@ -92,8 +92,10 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 			const [y, z] = positions[i];
 			point.position.set(getRandomX(), y, z);
 		});
+		resetCamera();
 		setGameStat(v => ({
 			...v,
+			score: 0,
 			total: 0,
 			hit: 0,
 			acc: 0,

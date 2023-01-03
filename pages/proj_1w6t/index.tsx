@@ -86,6 +86,7 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 		});
 		setGameStat(v => ({
 			...v,
+			score: 0,
 			total: 0,
 			hit: 0,
 			acc: 0,

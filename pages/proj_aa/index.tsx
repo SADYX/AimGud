@@ -8,7 +8,8 @@ import { aimgudSceneGetter, ThreeDomHandle, ThreeDomProps } from 'components/hoc
 import { SIDE_LENGTH, threeInit, ThreeParams } from 'components/threeInit/proj_aa';
 
 const R = SIDE_LENGTH / 4;
-const FAR_IN_FRAME = 0.3;
+const FAR_IN_FRAME = 0.2;
+const DEFAULT_POS = new THREE.Vector3(0, 0, -R);
 
 type LonLat = {
     longitude: number,
@@ -16,35 +17,35 @@ type LonLat = {
 }
 
 const getVector3ByLonLat = (lonLat: LonLat) => {
-    const { longitude, latitude } = lonLat
+    const { longitude, latitude } = lonLat;
     const lon = longitude * Math.PI / 180;
     const lat = latitude * Math.PI / 180;
 
     const x = R * Math.cos(lat) * Math.cos(lon);
-    const y = R * Math.cos(lat) * Math.sin(lon);
-    const z = R * Math.sin(lat);
+    const z = R * Math.cos(lat) * Math.sin(lon);
+    const y = R * Math.sin(lat);
 
     const pos = new THREE.Vector3(x, y, z);
     return pos;
 }
 
 const getLonLatByVector3 = (vec: THREE.Vector3) => {
-    const lat = Math.asin(vec.z / R);
-    const lon = Math.asin(vec.y / R / Math.cos(lat));
+    const { x, y, z } = vec;
+    const longitude = Math.atan2(z, x) * 180 / Math.PI;
+    const latitude = Math.atan2(y, Math.sqrt(x * x + z * z)) * 180 / Math.PI;
     return {
-        longitude: lon * 180 / Math.PI,
-        latitude: lat * 180 / Math.PI,
+        longitude,
+        latitude,
     } as LonLat;
 }
 
 // "random"
-const generateRandomLonLat = () => {
+const generateRandomLonLat = (prev: LonLat) => {
     const minLat = -45;
     const maxLat = 45;
-    const minLon = -180;
-    const maxLon = 180;
 
-    const longitude = Math.random() * (maxLon - minLon) + minLon;
+    const addLon = Math.random() > 0.5 ? 45 : -45;
+    const longitude = prev.longitude + addLon;
     const latitude = Math.random() * (maxLat - minLat) + minLat;
 
     return {
@@ -86,6 +87,7 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
 
         // move ball
         const cur = getLonLatByVector3(ball.position);
+
         const end = trend.current;
         const lonGap = end.longitude - cur.longitude;
         const latGap = end.latitude - cur.latitude;
@@ -117,15 +119,21 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
                 total: _v.total + 1,
             }));
         }
-
-
     }, [threeParams]);
 
     // reset game
     const restart = useCallback(() => {
         if (!threeParams) return;
-        const { scene } = threeParams;
-
+        const { ball, camera } = threeParams;
+        ball.position.copy(DEFAULT_POS);
+        camera.lookAt(DEFAULT_POS);
+        setGameStat(v => ({
+            ...v,
+            score: 0,
+            total: 0,
+            hit: 0,
+            acc: 0,
+        }));
     }, [threeParams]);
 
     // unlock pointer at the end
@@ -147,16 +155,6 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
         if (!dom) return;
         const params = threeInit(dom);
         setThreeParams(params);
-
-        // update ball's moving trend every 0.5 ~ 2 sec
-        let timer: NodeJS.Timer;
-        const interFn = () => {
-            const randomLonLat = generateRandomLonLat();
-            trend.current = randomLonLat;
-            timer = setTimeout(interFn, Math.floor(Math.random() * 1500) + 500);
-        };
-        interFn();
-
         const {
             camera,
             renderer,
@@ -165,10 +163,19 @@ const ThreeDom = forwardRef<ThreeDomHandle, ThreeDomProps>((props, ref) => {
             ball,
         } = params;
 
-        ball.position.set(0, 0, -R);
-
         // render the first frame
+        ball.position.copy(DEFAULT_POS);
         renderer.render(scene, camera);
+
+        // update ball's moving trend every 0.5 ~ 2 sec
+        let timer: NodeJS.Timer;
+        const interFn = () => {
+            const prev = getLonLatByVector3(ball.position);
+            const randomLonLat = generateRandomLonLat(prev);
+            trend.current = randomLonLat;
+            timer = setTimeout(interFn, Math.floor(Math.random() * 1500) + 500);
+        };
+        interFn();
 
         const escTrigger = () => {
             const event = new KeyboardEvent('keydown', { 'key': 'Escape' });
