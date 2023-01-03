@@ -14,6 +14,7 @@ type ThreeParams = {
     renderer: THREE.WebGLRenderer;
     scene: THREE.Scene;
     controls: PointerLockControls;
+    resetCamera: () => void;
 }
 
 const SIDE_LENGTH = 700;
@@ -77,11 +78,16 @@ const threeInit = (dom: HTMLDivElement) => {
         controls.getObject(),
     );
 
+    const resetCamera = () => {
+        camera.lookAt(700, 0, 0);
+    }
+
     return {
         camera,
         renderer,
         scene,
         controls,
+        resetCamera,
     } as ThreeParams;
 }
 

@@ -5,12 +5,13 @@ import 'animate.css';
 import Image, { StaticImageData } from 'next/image';
 import img_1w6t from '../public/images/proj/1w6t.png';
 import img_1w6t3d from '../public/images/proj/1w6t3d.png';
+import img_aa from '../public/images/proj/aa.png';
 import { GithubOutlined } from '@ant-design/icons';
 
 const ROUTE_MAPPER: [string, string, StaticImageData][] = [
 	['1 wall 6 targets', '/proj_1w6t', img_1w6t],
 	['1 wall 6 targets 3D', '/proj_1w6t3d', img_1w6t3d],
-	['air angelic', '/proj_aa', img_1w6t3d],
+	['air angelic', '/proj_aa', img_aa],
 ];
 
 type ListItemProps = {
