@@ -1,6 +1,6 @@
 # AimGud
 
-Aimgud is under development....
+Aimgud is under development?
 
 # License
 
